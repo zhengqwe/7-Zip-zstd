@@ -1450,8 +1450,7 @@ bool CCompressDialog::OnCommand(unsigned code, unsigned itemID, LPARAM lParam)
       {
         Get_FormatOptions().ResetForLevelChange();
 
-        //SetMethod();
-        MethodChanged();
+        SetMethod();
         SetSolidBlockSize();
         SetNumThreads();
         CheckSFXNameChange();
@@ -1798,6 +1797,15 @@ void CCompressDialog::SetMethod2(int keepMethodId)
   _auto_MethodId = -1;
   const CFormatInfo &fi = g_Formats[GetStaticFormatIndex()];
   const CArcInfoEx &ai = Get_ArcInfoEx();
+  if (GetLevel() == 0 && !ai.Flags_HashHandler())
+  {
+    if (!ai.Is_Tar() &&
+        !ai.Is_Zstd())
+    {
+      MethodChanged();
+      return;
+    }
+  }
   UString defaultMethod;
   int defaultLevel = 5;
   {
